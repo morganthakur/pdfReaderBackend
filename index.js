@@ -10,18 +10,28 @@ const PORT = 4000
 
 
 
-app.post('/get-text',upload.single("file"), async(req, res) => {
- try {
-     const filePath = req.file.path;
-     const text = await extractTextFromPdf(filePath)
-     res.send(text)
- } catch (error) {
-    console.log(error)
-    res.status(500).json({
-        message:"internal server error",
-        errror:error
-    })
- }
+app.post('/get-text', upload.single("file"), async (req, res) => {
+    try {
+        const filePath = req.file.path;
+        const text = await extractTextFromPdf(filePath)
+        res.send(text)
+
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Error deleting file: ${filePath}`, err);
+            } else {
+                console.log(`File deleted: ${filePath}`);
+            }
+        });
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "internal server error",
+            errror: error
+        })
+    }
 })
 
 
